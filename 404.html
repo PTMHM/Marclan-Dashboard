@@ -2,62 +2,96 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Marclan Corporate Dashboard</title>
-
-<!-- Cadangan 1: kalau JavaScript mati, pengalihan tetap jalan lewat meta refresh -->
-<meta http-equiv="refresh" content="0; url=https://script.google.com/macros/s/AKfycbz58PcPFi5JIsKSM-SKZZHRcKQnsclximFL5fGIS_v6DDzpCYa1iNGt-4Rq1Wgt-hkeqw/exec?corporate=M4rcl4n12345">
-
 <style>
-  body {
-    font-family: 'DM Sans', Arial, sans-serif;
-    display: flex; justify-content: center; align-items: center;
-    height: 100vh; margin: 0;
-    background: #f4f6f9; color: #2B3674;
+  html, body { margin:0; padding:0; height:100%; background:#0f1420; overflow:hidden; }
+  #app { border:0; width:100%; height:100%; display:block; }
+  #boot {
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:14px; background:#0f1420; color:#c9d3e6;
+    font-family:'DM Sans',system-ui,-apple-system,sans-serif; z-index:2; transition:opacity .4s;
   }
-  .container { text-align: center; padding: 24px; }
-  .spinner {
-    border: 4px solid rgba(43,54,116,.12);
-    border-left-color: #4318FF;
-    width: 40px; height: 40px; border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
+  #boot.hide { opacity:0; pointer-events:none; }
+  .spin {
+    width:34px; height:34px; border:3px solid rgba(255,255,255,.15);
+    border-top-color:#6d7cff; border-radius:50%; animation:sp 1s linear infinite;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  h2 { font-size: 17px; font-weight: 700; margin: 0 0 8px; }
-  p { font-size: 13.5px; color: #707EAE; margin: 0; }
-  a { color: #4318FF; text-decoration: none; font-weight: 600; }
-  a:hover { text-decoration: underline; }
+  @keyframes sp { to { transform:rotate(360deg); } }
+  #boot small { font-size:13px; letter-spacing:.06em; opacity:.7; }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="spinner"></div>
-  <h2>Menghubungkan ke Marclan Corporate Dashboard…</h2>
-  <p>Jika halaman tidak berpindah otomatis,
-     <a id="manual" href="https://script.google.com/macros/s/AKfycbz58PcPFi5JIsKSM-SKZZHRcKQnsclximFL5fGIS_v6DDzpCYa1iNGt-4Rq1Wgt-hkeqw/exec?corporate=M4rcl4n12345">klik di sini untuk masuk</a>.
-  </p>
-</div>
+<div id="boot"><div class="spin"></div><small>Memuat dashboard…</small></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     ISI URL APLIKASI DI BAWAH INI (baris APP_URL).
+     Ambil dari Apps Script → Deploy → Manage deployments → Web app URL.
+     WAJIB menyertakan bagian ?corporate=... di belakangnya.
+     Contoh bentuknya:
+     https://script.google.com/macros/s/AKfycb.....xyz/exec?corporate=XXXXX
+     ═══════════════════════════════════════════════════════════════════════ -->
+<iframe id="app"
+        title="Marclan Corporate Dashboard"
+        allow="clipboard-read; clipboard-write; fullscreen"
+        referrerpolicy="no-referrer-when-downgrade"></iframe>
 
 <script>
-  // Cadangan 2: pengalihan utama lewat JavaScript.
-  // replace() dipakai (bukan href) supaya tombol Back tidak terjebak
-  // memantul balik ke halaman ini terus-menerus.
-  (function () {
-    var targetUrl = "https://script.google.com/macros/s/AKfycbz58PcPFi5JIsKSM-SKZZHRcKQnsclximFL5fGIS_v6DDzpCYa1iNGt-4Rq1Wgt-hkeqw/exec?corporate=M4rcl4n12345";
-    try { window.location.replace(targetUrl); }
-    catch (e) { window.location.href = targetUrl; }
-  })();
+(function(){
+  "use strict";
+
+  // ══ ISI DI SINI ══
+  var APP_URL = "https://script.google.com/macros/s/AKfycbz58PcPFi5JIsKSM-SKZZHRcKQnsclximFL5fGIS_v6DDzpCYa1iNGt-4Rq1Wgt-hkeqw/exec?corporate=M4rcl4n12345";
+
+  var STORAGE_KEY = 'marclan_corp_token';
+  var frame = document.getElementById('app');
+  var boot  = document.getElementById('boot');
+
+  if (APP_URL.indexOf('PASTE_URL') === 0) {
+    boot.innerHTML = '<div style="max-width:460px;text-align:center;line-height:1.6;padding:24px">'
+      + '<b style="font-size:16px">URL aplikasi belum diisi</b><br>'
+      + '<span style="font-size:13px;opacity:.8">Buka file ini, cari baris '
+      + '<code>APP_URL</code>, lalu isi dengan Web App URL Apps Script '
+      + '(lengkap dengan <code>?corporate=...</code>).</span></div>';
+    return;
+  }
+
+  frame.src = APP_URL;
+  frame.addEventListener('load', function(){ boot.classList.add('hide'); });
+  setTimeout(function(){ boot.classList.add('hide'); }, 8000);
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     JEMBATAN SESI LOGIN
+
+     Dashboard berjalan di dalam iframe (domain Google). Safari di Mac & iPhone
+     MEMBLOKIR penyimpanan milik situs pihak ketiga, sehingga dashboard tidak
+     bisa menyimpan sesi login-nya sendiri — akibatnya pengguna diminta login
+     terus-menerus, atau gagal masuk sama sekali.
+
+     Halaman ini berada di domain perusahaan, jadi penyimpanannya berstatus
+     pihak pertama dan TIDAK diblokir browser mana pun. Karena itu halaman ini
+     yang menyimpan sesinya, lalu mengirimkannya ke dashboard saat dibuka.
+
+     Token hanya dikirim ke frame yang memintanya (ev.source), tidak disebar.
+     ═══════════════════════════════════════════════════════════════════════ */
+  window.addEventListener('message', function(ev){
+    var d = (ev && ev.data) || {};
+    if (!d || !d.type) return;
+
+    if (d.type === 'marclan-token-request') {
+      var t = '';
+      try { t = localStorage.getItem(STORAGE_KEY) || ''; } catch(e){}
+      try { ev.source.postMessage({ type:'marclan-token-restore', token:t }, '*'); } catch(e){}
+
+    } else if (d.type === 'marclan-token-set') {
+      try { localStorage.setItem(STORAGE_KEY, d.token || ''); } catch(e){}
+
+    } else if (d.type === 'marclan-token-clear') {
+      try { localStorage.removeItem(STORAGE_KEY); } catch(e){}
+    }
+  });
+})();
 </script>
-
-<noscript>
-  <!-- Cadangan 3: JavaScript mati DAN meta refresh diblokir -->
-  <p style="text-align:center">
-    Browser Anda memblokir pengalihan otomatis.
-    <a href="https://script.google.com/macros/s/AKfycbz58PcPFi5JIsKSM-SKZZHRcKQnsclximFL5fGIS_v6DDzpCYa1iNGt-4Rq1Wgt-hkeqw/exec?corporate=M4rcl4n12345">Klik di sini untuk masuk ke dashboard</a>.
-  </p>
-</noscript>
-
 </body>
 </html>
