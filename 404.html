@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marclan Corporate Dashboard</title>
+
+<!-- Cadangan 1: kalau JavaScript mati, pengalihan tetap jalan lewat meta refresh -->
+<meta http-equiv="refresh" content="0; url=https://script.google.com/macros/s/AKfycbz58PcPFi5JIsKSM-SKZZHRcKQnsclximFL5fGIS_v6DDzpCYa1iNGt-4Rq1Wgt-hkeqw/exec?corporate=M4rcl4n12345">
+
+<style>
+  body {
+    font-family: 'DM Sans', Arial, sans-serif;
+    display: flex; justify-content: center; align-items: center;
+    height: 100vh; margin: 0;
+    background: #f4f6f9; color: #2B3674;
+  }
+  .container { text-align: center; padding: 24px; }
+  .spinner {
+    border: 4px solid rgba(43,54,116,.12);
+    border-left-color: #4318FF;
+    width: 40px; height: 40px; border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  h2 { font-size: 17px; font-weight: 700; margin: 0 0 8px; }
+  p { font-size: 13.5px; color: #707EAE; margin: 0; }
+  a { color: #4318FF; text-decoration: none; font-weight: 600; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="spinner"></div>
+  <h2>Menghubungkan ke Marclan Corporate Dashboard…</h2>
+  <p>Jika halaman tidak berpindah otomatis,
+     <a id="manual" href="https://script.google.com/macros/s/AKfycbz58PcPFi5JIsKSM-SKZZHRcKQnsclximFL5fGIS_v6DDzpCYa1iNGt-4Rq1Wgt-hkeqw/exec?corporate=M4rcl4n12345">klik di sini untuk masuk</a>.
+  </p>
+</div>
+
+<script>
+  // Cadangan 2: pengalihan utama lewat JavaScript.
+  // replace() dipakai (bukan href) supaya tombol Back tidak terjebak
+  // memantul balik ke halaman ini terus-menerus.
+  (function () {
+    var targetUrl = "https://script.google.com/macros/s/AKfycbz58PcPFi5JIsKSM-SKZZHRcKQnsclximFL5fGIS_v6DDzpCYa1iNGt-4Rq1Wgt-hkeqw/exec?corporate=M4rcl4n12345";
+    try { window.location.replace(targetUrl); }
+    catch (e) { window.location.href = targetUrl; }
+  })();
+</script>
+
+<noscript>
+  <!-- Cadangan 3: JavaScript mati DAN meta refresh diblokir -->
+  <p style="text-align:center">
+    Browser Anda memblokir pengalihan otomatis.
+    <a href="https://script.google.com/macros/s/AKfycbz58PcPFi5JIsKSM-SKZZHRcKQnsclximFL5fGIS_v6DDzpCYa1iNGt-4Rq1Wgt-hkeqw/exec?corporate=M4rcl4n12345">Klik di sini untuk masuk ke dashboard</a>.
+  </p>
+</noscript>
+
+</body>
+</html>
